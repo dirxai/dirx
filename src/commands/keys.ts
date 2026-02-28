@@ -101,7 +101,7 @@ export function registerKeysCommand(program: Command): void {
                 try {
                     const client = await createClient();
                     const result = await client.listByok();
-                    console.log(JSON.stringify(result, null, 2));
+                    console.log(JSON.stringify(result));
                 } catch (err) {
                     const msg = err instanceof Error ? err.message : String(err);
                     console.error(`Error: ${msg}`);

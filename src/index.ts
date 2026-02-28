@@ -24,7 +24,11 @@ try {
 
 const program = new Command();
 
-program.name("dirx").description("DirX — Unified Gateway & CLI for Agents").version(version);
+program
+    .name("dirx")
+    .description("DirX — Unified Gateway & CLI for Agents")
+    .version(version)
+    .option("--json", "Output raw JSON instead of human-readable text");
 
 // --- Auth ---
 program

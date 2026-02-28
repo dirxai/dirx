@@ -1,21 +1,31 @@
 /**
- * FS commands: ls, cat, write, edit, rm, bash, grep.
+ * FS commands: ls, cat, read, write, edit, rm, bash, grep.
  *
  * ALL commands go through the single /execute endpoint. The CLI sends a plain
  * text command string — it does NOT know Gateway internal API routes.
+ *
+ * Default output: human-readable plain text (Unix style).
+ * --json flag: raw JSON envelope.
  */
 
 import type { Command } from "commander";
 import { createClient } from "../gateway/client.js";
 import { getAuthHint } from "../keys/provider-map.js";
+import {
+    formatLs,
+    formatGrep,
+    formatCat,
+    formatMutate,
+    formatJson,
+} from "../format.js";
 
-function output(result: unknown): void {
-    console.log(JSON.stringify(result, null, 2));
+/** Print result: human-readable by default, JSON with --json flag. */
+function output(result: unknown, jsonMode: boolean): void {
+    console.log(jsonMode ? formatJson(result) : formatCat(result));
 }
 
 /** Extract domain from a DirX path like "/net/api.github.com/..." */
 function extractDomain(path: string): string | null {
-    // Strip /net/ prefix and get the domain part
     const cleaned = path.replace(/^\/+/, "");
     const segments = cleaned.split("/");
     // Skip namespace (net, skills, etc.) to get domain
@@ -63,7 +73,7 @@ function handleError(err: unknown, cmdPath?: string): never {
         }
     }
 
-    console.error(JSON.stringify({ error: message }));
+    console.error(message);
     process.exit(1);
 }
 
@@ -74,14 +84,14 @@ export function registerFsCommands(program: Command): void {
         .argument("[path]", "Directory path (e.g. /net/)", "/")
         .action(async (path: string) => {
             try {
-                // Ensure trailing slash is removed except for root path "/"
                 let normalizedPath = path.trim();
                 if (normalizedPath.length > 1 && normalizedPath.endsWith("/")) {
                     normalizedPath = normalizedPath.replace(/\/+$/, "");
                 }
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`ls ${normalizedPath}`);
-                output(result);
+                console.log(jsonMode ? formatJson(result) : formatLs(result));
             } catch (err) {
                 handleError(err, path);
             }
@@ -93,9 +103,10 @@ export function registerFsCommands(program: Command): void {
         .argument("<path>", "File path")
         .action(async (path: string) => {
             try {
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`cat ${path}`);
-                output(result);
+                output(result, jsonMode);
             } catch (err) {
                 handleError(err, path);
             }
@@ -107,9 +118,10 @@ export function registerFsCommands(program: Command): void {
         .argument("<path>", "File path")
         .action(async (path: string) => {
             try {
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`cat ${path}`);
-                output(result);
+                output(result, jsonMode);
             } catch (err) {
                 handleError(err, path);
             }
@@ -132,9 +144,10 @@ export function registerFsCommands(program: Command): void {
                         const { readFileSync } = await import("node:fs");
                         payload = readFileSync(opts.file, "utf-8");
                     }
+                    const jsonMode = program.opts().json === true;
                     const client = await createClient();
                     const result = await client.execute(`write ${path} ${payload}`);
-                    output(result);
+                    console.log(jsonMode ? formatJson(result) : formatMutate(result, "Created", path));
                 } catch (err) {
                     handleError(err, path);
                 }
@@ -158,9 +171,10 @@ export function registerFsCommands(program: Command): void {
                         const { readFileSync } = await import("node:fs");
                         payload = readFileSync(opts.file, "utf-8");
                     }
+                    const jsonMode = program.opts().json === true;
                     const client = await createClient();
                     const result = await client.execute(`edit ${path} ${payload}`);
-                    output(result);
+                    console.log(jsonMode ? formatJson(result) : formatMutate(result, "Updated", path));
                 } catch (err) {
                     handleError(err, path);
                 }
@@ -173,9 +187,10 @@ export function registerFsCommands(program: Command): void {
         .argument("<path>", "Resource path")
         .action(async (path: string) => {
             try {
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`rm ${path}`);
-                output(result);
+                console.log(jsonMode ? formatJson(result) : formatMutate(result, "Removed", path));
             } catch (err) {
                 handleError(err, path);
             }
@@ -187,9 +202,10 @@ export function registerFsCommands(program: Command): void {
         .argument("<pipeline>", "Pipeline expression")
         .action(async (pipeline: string) => {
             try {
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`bash ${pipeline}`);
-                output(result);
+                output(result, jsonMode);
             } catch (err) {
                 handleError(err);
             }
@@ -199,12 +215,13 @@ export function registerFsCommands(program: Command): void {
         .command("grep")
         .description("Search across services in the DirX path space")
         .argument("<pattern>", "Search pattern")
-        .argument("<path>", "Search scope path")
+        .argument("[path]", "Search scope path", "/")
         .action(async (pattern: string, path: string) => {
             try {
+                const jsonMode = program.opts().json === true;
                 const client = await createClient();
                 const result = await client.execute(`grep ${pattern} ${path}`);
-                output(result);
+                console.log(jsonMode ? formatJson(result) : formatGrep(result));
             } catch (err) {
                 handleError(err, path);
             }
