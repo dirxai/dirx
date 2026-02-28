@@ -12,24 +12,43 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: npm run build
+      - name: Build all packages
+        run: pnpm -r build
 
       - name: Set version from tag
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           VERSION="${TAG#v}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          # Update all package versions
+          cd packages/core && npm version "$VERSION" --no-git-tag-version --allow-same-version && cd ../..
+          cd packages/cli && npm version "$VERSION" --no-git-tag-version --allow-same-version && cd ../..
 
-      - name: Publish
-        run: npm publish --provenance --access public
+      - name: Resolve workspace references
+        run: |
+          CORE_VERSION=$(node -p "require('./packages/core/package.json').version")
+          sed -i "s|\"workspace:\\^\"|\"\^$CORE_VERSION\"|g" packages/cli/package.json
+
+      - name: Publish @dirxai/core
+        run: npm publish --provenance --access public || true
+        working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @dirxai/cli
+        run: npm publish --provenance --access public || true
+        working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -5,10 +5,21 @@
 
 DirX gives AI agents a unified, file-system-like interface to discover and interact with internet APIs — with built-in governance, access control, and auditing.
 
+## Packages
+
+| Package | Description | npm |
+|---------|-------------|-----|
+| [`@dirxai/cli`](./packages/cli) | CLI for agents and developers | [![npm](https://img.shields.io/npm/v/@dirxai/cli.svg)](https://www.npmjs.com/package/@dirxai/cli) |
+| [`@dirxai/core`](./packages/core) | Server-side SDK — Guard, JWKS, AgentContext | [![npm](https://img.shields.io/npm/v/@dirxai/core.svg)](https://www.npmjs.com/package/@dirxai/core) |
+
 ## Install
 
 ```bash
+# CLI (global)
 npm install -g @dirxai/cli
+
+# Server-side SDK
+npm install @dirxai/core
 ```
 
 ## Quick Start
@@ -34,7 +45,33 @@ dirx write /net/api.example.com/data -d '{"key": "value"}'
 dirx keys set api.github.com --token ghp_xxxx --sync
 ```
 
-## Commands
+## Server-side SDK
+
+```typescript
+import { createGuard } from "@dirxai/core";
+
+const guard = createGuard({
+    jwksUrl: "https://api.dirx.ai/.well-known/jwks.json",
+});
+
+// Express middleware
+app.use(guard.express());
+
+// Or manual verification
+const ctx = await guard.authenticate(bearerToken);
+console.log(ctx.sub, ctx.roles, ctx.orgId);
+```
+
+### Testing helpers
+
+```typescript
+import { createMockAgent } from "@dirxai/core/testing";
+
+const agent = createMockAgent({ roles: ["agent"], orgId: "org-1" });
+expect(agent.isAgent()).toBe(true);
+```
+
+## CLI Commands
 
 ### Agent Commands
 
@@ -81,9 +118,9 @@ dirx keys set api.github.com --token ghp_xxxx --sync
 ```bash
 git clone https://github.com/dirxai/dirx.git
 cd dirx
-npm install
-npm run build
-npm run lint
+pnpm install
+pnpm -r build
+pnpm test
 ```
 
 ## License

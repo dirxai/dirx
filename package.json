@@ -1,20 +1,11 @@
 {
-    "name": "@dirxai/cli",
-    "version": "0.2.2",
-    "description": "DirX — Unified Gateway & CLI for Agents",
-    "license": "MIT",
-    "type": "module",
-    "bin": {
-        "dirx": "./dist/index.js"
-    },
+    "name": "dirx",
+    "private": true,
     "scripts": {
-        "build": "tsup",
-        "dev": "tsup --watch",
+        "build": "pnpm -r build",
+        "dev": "pnpm -r --parallel dev",
         "lint": "tsc --noEmit",
         "test": "vitest run"
-    },
-    "dependencies": {
-        "commander": "^13.0.0"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",
@@ -22,26 +13,9 @@
         "typescript": "^5.7.0",
         "vitest": "^4.0.0"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/dirxai/dirx.git"
-    },
-    "homepage": "https://dirx.ai",
-    "keywords": [
-        "dirx",
-        "agent",
-        "cli",
-        "gateway",
-        "api",
-        "mcp"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "files": [
-        "dist"
-    ],
-    "engines": {
-        "node": ">=18"
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild"
+        ]
     }
 }

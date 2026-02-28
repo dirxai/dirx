@@ -1,0 +1,53 @@
+{
+    "name": "@dirxai/core",
+    "version": "0.1.0",
+    "description": "DirX server-side SDK — Guard middleware, JWKS auth, AgentContext, error codes",
+    "license": "MIT",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./testing": {
+            "types": "./dist/testing.d.ts",
+            "import": "./dist/testing.js",
+            "require": "./dist/testing.cjs"
+        }
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch"
+    },
+    "dependencies": {
+        "jose": "^6.1.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dirxai/dirx.git",
+        "directory": "packages/core"
+    },
+    "homepage": "https://dirx.ai",
+    "keywords": [
+        "dirx",
+        "agent",
+        "sdk",
+        "gateway",
+        "guard",
+        "jwks",
+        "jwt"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist"
+    ],
+    "engines": {
+        "node": ">=18"
+    }
+}
