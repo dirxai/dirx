@@ -71,11 +71,16 @@ export function registerFsCommands(program: Command): void {
     program
         .command("ls")
         .description("List directory contents in the DirX path space")
-        .argument("<path>", "Directory path (e.g. /net/)")
+        .argument("[path]", "Directory path (e.g. /net/)", "/")
         .action(async (path: string) => {
             try {
+                // Ensure trailing slash is removed except for root path "/"
+                let normalizedPath = path.trim();
+                if (normalizedPath.length > 1 && normalizedPath.endsWith("/")) {
+                    normalizedPath = normalizedPath.replace(/\/+$/, "");
+                }
                 const client = await createClient();
-                const result = await client.execute(`ls ${path}`);
+                const result = await client.execute(`ls ${normalizedPath}`);
                 output(result);
             } catch (err) {
                 handleError(err, path);
