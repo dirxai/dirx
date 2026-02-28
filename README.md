@@ -44,6 +44,7 @@ dirx keys set api.github.com --token ghp_xxxx --sync
 | `dirx cat <path>` | Read file contents |
 | `dirx write <path>` | Write data |
 | `dirx edit <path>` | Partial update |
+| `dirx rm <path>` | Remove a resource |
 | `dirx grep <pattern> <path>` | Search across services |
 | `dirx bash <pipeline>` | Execute multi-step pipeline |
 
@@ -53,6 +54,7 @@ dirx keys set api.github.com --token ghp_xxxx --sync
 |---------|-------------|
 | `dirx init [dir]` | Initialize DirX in a project |
 | `dirx generate [dir]` | Scan and detect route definitions |
+| `dirx generate --register` | Scan and auto-register with the gateway |
 | `dirx claim <domain>` | Claim domain via DNS verification |
 | `dirx register` | Register DIR.md with the gateway |
 

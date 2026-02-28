@@ -46,14 +46,23 @@ program
         await runInit(dir);
     });
 
-// --- Generate (local) ---
+// --- Generate (local, with optional --register) ---
 program
     .command("generate")
-    .description("Scan project and detect route definitions")
+    .description("Scan project and generate DIR.md, optionally register")
     .argument("[dir]", "Project directory", ".")
-    .action(async (dir: string) => {
+    .option("--register", "Register the service with the gateway after generating")
+    .option("--gateway-url <url>", "Gateway URL for registration")
+    .option("--token <token>", "Auth token for registration")
+    .option("--domain <domain>", "Domain name for the service")
+    .action(async (dir: string, opts: Record<string, string | boolean | undefined>) => {
         const { runGenerate } = await import("./commands/generate.js");
-        await runGenerate(dir);
+        await runGenerate(dir, {
+            register: opts.register as boolean | undefined,
+            gatewayUrl: opts.gatewayUrl as string | undefined,
+            token: opts.token as string | undefined,
+            domain: opts.domain as string | undefined,
+        });
     });
 
 // --- Claim ---

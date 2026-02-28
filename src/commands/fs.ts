@@ -1,5 +1,5 @@
 /**
- * FS commands: ls, cat, write, edit, bash, grep.
+ * FS commands: ls, cat, write, edit, rm, bash, grep.
  *
  * ALL commands go through the single /execute endpoint. The CLI sends a plain
  * text command string — it does NOT know Gateway internal API routes.
@@ -161,6 +161,20 @@ export function registerFsCommands(program: Command): void {
                 }
             },
         );
+
+    program
+        .command("rm")
+        .description("Remove a resource at a DirX path")
+        .argument("<path>", "Resource path")
+        .action(async (path: string) => {
+            try {
+                const client = await createClient();
+                const result = await client.execute(`rm ${path}`);
+                output(result);
+            } catch (err) {
+                handleError(err, path);
+            }
+        });
 
     program
         .command("bash")

@@ -1,7 +1,7 @@
 /**
  * Generate command: scan project and update DIR.md/dir.json.
  *
- * Purely local — no network access required.
+ * Purely local by default. With --register, also registers with the gateway.
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -14,7 +14,17 @@ const SKIP_DIRS = new Set([
     "vendor", "dist", "build", ".next",
 ]);
 
-export async function runGenerate(dir: string): Promise<void> {
+export interface GenerateOptions {
+    register?: boolean;
+    gatewayUrl?: string;
+    token?: string;
+    domain?: string;
+}
+
+export async function runGenerate(
+    dir: string,
+    opts?: GenerateOptions,
+): Promise<void> {
     const target = dir === "." ? process.cwd() : dir;
     const dirJsonPath = join(target, "dir.json");
 
@@ -44,6 +54,18 @@ export async function runGenerate(dir: string): Promise<void> {
         console.log(`\nNo route definitions detected.`);
     }
     console.log(`\nEdit DIR.md and dir.json to describe your API.`);
+
+    // Auto-register with the gateway if --register is set
+    if (opts?.register) {
+        console.log(`\nRegistering with gateway...`);
+        const { runRegister } = await import("./register.js");
+        await runRegister({
+            gatewayUrl: opts.gatewayUrl,
+            token: opts.token,
+            domain: opts.domain,
+            dir: target,
+        });
+    }
 }
 
 interface RouteHint {
