@@ -10,7 +10,7 @@ DirX gives AI agents a unified, file-system-like interface to discover and inter
 | Package | Description | npm |
 |---------|-------------|-----|
 | [`@dirxai/cli`](./packages/cli) | CLI for agents and developers | [![npm](https://img.shields.io/npm/v/@dirxai/cli.svg)](https://www.npmjs.com/package/@dirxai/cli) |
-| [`@dirxai/core`](./packages/core) | Server-side SDK — Guard, JWKS, AgentContext | [![npm](https://img.shields.io/npm/v/@dirxai/core.svg)](https://www.npmjs.com/package/@dirxai/core) |
+| [`@dirxai/core`](./packages/core) | SDK — scanner, types, Guard middleware, JWKS auth | [![npm](https://img.shields.io/npm/v/@dirxai/core.svg)](https://www.npmjs.com/package/@dirxai/core) |
 
 ## Install
 
@@ -45,7 +45,19 @@ dirx write /net/api.example.com/data -d '{"key": "value"}'
 dirx keys set api.github.com --token ghp_xxxx --sync
 ```
 
-## Server-side SDK
+## SDK (`@dirxai/core`)
+
+### Scanner — framework detection & route extraction
+
+```typescript
+import { detectFramework, scanRoutes } from "@dirxai/core";
+
+const { lang, framework } = detectFramework("./my-project");
+const routes = scanRoutes("./my-project", framework);
+// => [{ file: "src/routes.ts", framework: "express" }]
+```
+
+### Guard — JWKS-based JWT middleware
 
 ```typescript
 import { createGuard } from "@dirxai/core";
@@ -60,6 +72,16 @@ app.use(guard.express());
 // Or manual verification
 const ctx = await guard.authenticate(bearerToken);
 console.log(ctx.sub, ctx.roles, ctx.orgId);
+```
+
+### Types & provider hints
+
+```typescript
+import type { DirxEnvelope, DirxService } from "@dirxai/core";
+import { getAuthHint } from "@dirxai/core";
+
+const hint = getAuthHint("api.github.com");
+// => { envVar: "GITHUB_TOKEN", guideUrl: "https://github.com/settings/tokens" }
 ```
 
 ### Testing helpers

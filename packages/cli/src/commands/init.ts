@@ -6,6 +6,7 @@
 
 import { existsSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { detectFramework } from "@dirxai/core";
 
 export async function runInit(dir: string): Promise<void> {
     const target = dir === "." ? process.cwd() : dir;
@@ -57,32 +58,4 @@ export async function runInit(dir: string): Promise<void> {
     console.log(`  1. Edit DIR.md to describe your service`);
     console.log(`  2. Run 'dirx generate' to scan routes`);
     console.log(`  3. Run 'dirx register --domain <your-domain>' to publish`);
-}
-
-function detectFramework(target: string): {
-    lang: string;
-    framework: string;
-} {
-    if (existsSync(join(target, "Cargo.toml"))) {
-        return { lang: "rust", framework: "axum" };
-    }
-    if (existsSync(join(target, "go.mod"))) {
-        return { lang: "go", framework: "net/http" };
-    }
-    if (existsSync(join(target, "package.json"))) {
-        if (
-            existsSync(join(target, "next.config.js")) ||
-            existsSync(join(target, "next.config.mjs"))
-        ) {
-            return { lang: "node", framework: "nextjs" };
-        }
-        return { lang: "node", framework: "express" };
-    }
-    if (
-        existsSync(join(target, "requirements.txt")) ||
-        existsSync(join(target, "pyproject.toml"))
-    ) {
-        return { lang: "python", framework: "fastapi" };
-    }
-    return { lang: "unknown", framework: "generic" };
 }

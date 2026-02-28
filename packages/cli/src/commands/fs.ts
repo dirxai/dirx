@@ -10,7 +10,7 @@
 
 import type { Command } from "commander";
 import { createClient } from "../gateway/client.js";
-import { getAuthHint } from "../keys/provider-map.js";
+import { getAuthHint } from "@dirxai/core";
 import {
     formatLs,
     formatGrep,

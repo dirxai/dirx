@@ -1,7 +1,7 @@
 {
     "name": "@dirxai/core",
     "version": "0.1.0",
-    "description": "DirX server-side SDK — Guard middleware, JWKS auth, AgentContext, error codes",
+    "description": "DirX SDK — scanner, types, Guard middleware, JWKS auth, error model",
     "license": "MIT",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -17,6 +17,16 @@
             "types": "./dist/testing.d.ts",
             "import": "./dist/testing.js",
             "require": "./dist/testing.cjs"
+        },
+        "./scanner": {
+            "types": "./dist/scanner/index.d.ts",
+            "import": "./dist/scanner/index.js",
+            "require": "./dist/scanner/index.cjs"
+        },
+        "./types": {
+            "types": "./dist/types.d.ts",
+            "import": "./dist/types.js",
+            "require": "./dist/types.cjs"
         }
     },
     "scripts": {
@@ -36,6 +46,7 @@
         "dirx",
         "agent",
         "sdk",
+        "scanner",
         "gateway",
         "guard",
         "jwks",
