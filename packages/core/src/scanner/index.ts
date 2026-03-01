@@ -10,3 +10,4 @@ export {
     extractRoutesRegex,
     type RouteHint,
 } from "./routes.js";
+export { extractPrismaModelNames } from "./schema.js";

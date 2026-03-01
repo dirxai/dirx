@@ -129,4 +129,9 @@ registerFsCommands(program);
 const { registerKeysCommand } = await import("./commands/keys.js");
 registerKeysCommand(program);
 
+if (process.argv.length <= 2) {
+    program.outputHelp();
+    process.exit(0);
+}
+
 program.parse();

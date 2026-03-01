@@ -16,6 +16,7 @@ export {
     scanRoutes,
     getRoutePatterns,
     extractRoutesRegex,
+    extractPrismaModelNames,
     type DetectedStack,
     type RouteHint,
 } from "./scanner/index.js";
@@ -40,6 +41,13 @@ export {
     type DirxTokenPayload,
 } from "./auth/jwks.js";
 export { AgentContext } from "./auth/context.js";
+
+// Generator
+export {
+    generateDirMd,
+    generateDirJson,
+    type GenerateOptions,
+} from "./generator.js";
 
 // Errors
 export { DirxError, DirxErrorCode } from "./errors.js";
