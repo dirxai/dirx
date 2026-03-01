@@ -1,5 +1,8 @@
 /**
  * Status command: show current DirX CLI configuration and auth status.
+ *
+ * Gateway and Server are the same endpoint (DirX API). We show a single
+ * "Gateway" line and focus on token + expiry for user/agent relevance.
  */
 
 import { getAgentToken } from "../credentials.js";
@@ -16,18 +19,19 @@ export async function runStatus(): Promise<void> {
         const hint = stored.token.length > 8
             ? `${stored.token.slice(0, 4)}...${stored.token.slice(-4)}`
             : "********";
-        console.log(`  Token:    ${hint}`);
-        console.log(`  Server:   ${stored.gatewayUrl}`);
-        if (stored.expiresAt) {
+        console.log(`  Token:   ${hint}`);
+        if (stored.expiresAt != null) {
             const expDate = new Date(stored.expiresAt * 1000);
-            const now = new Date();
-            if (expDate > now) {
-                console.log(`  Expires:  ${expDate.toISOString()}`);
+            const now = Date.now();
+            if (stored.expiresAt * 1000 > now) {
+                console.log(`  Expires: ${expDate.toISOString()}`);
             } else {
-                console.log(`  Expires:  EXPIRED (${expDate.toISOString()})`);
+                console.log(`  Expires: EXPIRED (${expDate.toISOString()})`);
             }
+        } else {
+            console.log(`  Expires: N/A (no exp in token)`);
         }
     } else {
-        console.log(`  Token:    not set (run 'dirx auth')`);
+        console.log(`  Token:   not set (run 'dirx auth')`);
     }
 }

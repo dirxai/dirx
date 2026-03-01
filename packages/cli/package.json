@@ -1,6 +1,6 @@
 {
     "name": "@dirxai/cli",
-    "version": "0.3.0",
+    "version": "0.3.3",
     "description": "DirX — Unified Gateway & CLI for Agents",
     "license": "MIT",
     "type": "module",
